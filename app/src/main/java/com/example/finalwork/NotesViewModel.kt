@@ -34,8 +34,7 @@ class NotesViewModel(application: Application): AndroidViewModel(application)
     fun Add(note: Note)
     {
         mNotes.value?.add(note)
-        mNotes.value?.sortBy { it.date }
-        mNotes.value?.reverse()
+        Sort()
     }
 
     fun Remove(i: Int)
@@ -51,6 +50,12 @@ class NotesViewModel(application: Application): AndroidViewModel(application)
     fun Size() : Int
     {
         return mNotes.value!!.size
+    }
+
+    fun Sort()
+    {
+        mNotes.value?.sortBy { it.date }
+        mNotes.value?.reverse()
     }
 
     fun Serialize()

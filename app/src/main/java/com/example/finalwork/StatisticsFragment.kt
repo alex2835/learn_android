@@ -51,8 +51,8 @@ class StatisticsFragment : Fragment()
     {
         // Select range
         val format = DateTimeFormatter.ofPattern("dd/MM/yyyy")
-        binding.textViewStartDate.setText("Start date: " + mStartDate.format(format))
-        binding.textViewEndDate.setText("End  date: "    + mEndDate.format(format))
+        binding.textViewStartDate.setText(getString(R.string.start_date_tv) + mStartDate.format(format))
+        binding.textViewEndDate.setText(getString(R.string.end_date_tv)  + mEndDate.format(format))
 
         var hours   = if (mStartTime.hour >= 10) "${mStartTime.hour}" else "0${mStartTime.hour}"
         var minutes = if (mStartTime.minute >= 10) ":${mStartTime.minute}" else ":0${mStartTime.minute}"

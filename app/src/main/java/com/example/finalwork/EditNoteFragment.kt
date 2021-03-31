@@ -127,7 +127,8 @@ class EditNoteFragment() : DialogFragment()
                         note.systolicPressure = input_note.systolicPressure
                         note.diastolicPressure = input_note.diastolicPressure
                         note.pulse = input_note.pulse
-                        note.date = input_note.date
+                        note.date  = input_note.date
+                        mNotesViewModel.Sort()
                         mNotesViewModel.mAdapter.notifyDataSetChanged()
                         dismiss()
                     }
