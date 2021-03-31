@@ -113,11 +113,6 @@ class NotesViewModel(application: Application): AndroidViewModel(application)
                             .withHour(note.date.hour)
                             .withMinute(note.date.minute)
 
-            //var a = (date.isAfter(start_date) || date.isEqual(start_date))
-            //var b = (date.isBefore(end_date)  || date.isEqual(end_date))
-            //var c = time.isAfter(start_time)
-            //var d = time.isBefore(end_time)
-
             if ( (date.isAfter(start_date) || date.isEqual(start_date)) &&
                  (date.isBefore(end_date)  || date.isEqual(end_date))   &&
                   time.isAfter(start_time) &&
