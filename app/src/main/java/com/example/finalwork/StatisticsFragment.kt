@@ -1,54 +1,177 @@
 package com.example.finalwork
 
+import android.os.Build
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.annotation.RequiresApi
+import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import com.example.finalwork.databinding.FragmentStatisticsBinding
+import java.time.DateTimeException
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+class StatisticsFragment : Fragment()
+{
+    private val mNotesViewModel: NotesViewModel by activityViewModels()
+    private lateinit var binding: FragmentStatisticsBinding
+    private var mStartDate = LocalDate.now()
+    private var mEndDate   = LocalDate.now()
+    private var mStartTime = LocalTime.now()
+    private var mEndTime   = LocalTime.now()
+    private var mActiveDateFiled = -1
 
-class StatisticsFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?)
+    {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View?
+    {
+        binding = DataBindingUtil.inflate<FragmentStatisticsBinding>(
+            inflater, R.layout.fragment_statistics, container, false)
+
+        SetOnCreateData()
+        return binding.root
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun SetOnCreateData()
+    {
+        // Select range
+        val format = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+        binding.textViewStartDate.setText("Start date: " + mStartDate.format(format))
+        binding.textViewEndDate.setText("End  date: "    + mEndDate.format(format))
+
+        var hours   = if (mStartTime.hour >= 10) "${mStartTime.hour}" else "0${mStartTime.hour}"
+        var minutes = if (mStartTime.minute >= 10) ":${mStartTime.minute}" else ":0${mStartTime.minute}"
+        binding.editTextStartTime.setText(hours + minutes)
+
+        hours   = if (mEndTime.hour >= 10) "${mEndTime.hour}" else "0${mEndTime.hour}"
+        minutes = if (mEndTime.minute >= 10) ":${mEndTime.minute}" else ":0${mEndTime.minute}"
+        binding.editTextEndTime.setText(hours + minutes)
+
+        binding.textViewStartDate.setOnClickListener {
+            if (mActiveDateFiled == 1)
+            {
+                mActiveDateFiled = -1
+                binding.datePicker.visibility = View.GONE
+                return@setOnClickListener
+            }
+            mActiveDateFiled = 1
+            binding.datePicker.visibility = View.VISIBLE
+            binding.datePicker.updateDate(mStartDate.year, mStartDate.monthValue - 1, mStartDate.dayOfMonth)
+        }
+
+        binding.textViewEndDate.setOnClickListener {
+            if (mActiveDateFiled == 2)
+            {
+                mActiveDateFiled = -1
+                binding.datePicker.visibility = View.GONE
+                return@setOnClickListener
+            }
+            mActiveDateFiled = 2
+            binding.datePicker.visibility = View.VISIBLE
+            binding.datePicker.updateDate(mEndDate.year, mEndDate.monthValue - 1, mEndDate.dayOfMonth)
+        }
+
+        binding.datePicker.setOnDateChangedListener { view, year, monthOfYear, dayOfMonth ->
+            if (mActiveDateFiled == 1)
+            {
+                ExtractDate()
+                binding.textViewStartDate.setText(getString(R.string.start_date_tv) + mStartDate.format(format))
+            }
+            else if (mActiveDateFiled == 2)
+            {
+                ExtractDate()
+                binding.textViewEndDate.setText(getString(R.string.end_date_tv)    + mEndDate.format(format))
+            }
+            else {
+                assert(false)
+            }
+        }
+
+        // Show statistic
+        binding.buttonCalculate.setOnClickListener {
+            binding.datePicker.visibility = View.GONE
+
+            try {
+                ExtractTime()
+                mNotesViewModel.CalculateStatistic(mStartDate, mEndDate, mStartTime, mEndTime)
+
+                binding.spDataTv.setText("Min: ${mNotesViewModel.min_sp}     Max: ${mNotesViewModel.max_sp}     Avg: ${mNotesViewModel.avg_sp} ")
+                binding.dpDataTv.setText("Min: ${mNotesViewModel.min_dp}     Max: ${mNotesViewModel.max_dp}     Avg: ${mNotesViewModel.avg_dp} ")
+                binding.pulseDataTv.setText("Min: ${mNotesViewModel.min_pulse}     Max: ${mNotesViewModel.max_pulse}     Avg: ${mNotesViewModel.avg_pulse}")
+            }
+            catch (e: DateTimeException)
+            {
+                Toast.makeText(context, getString(R.string.invalid_time_toast) , Toast.LENGTH_SHORT).show()
+            }
+        }
+
+    }
+
+    fun ExtractDate()
+    {
+        val year  = binding.datePicker.year
+        val month = binding.datePicker.month
+        val day   = binding.datePicker.dayOfMonth
+
+        if (mActiveDateFiled == 1)
+        {
+            mStartTime = LocalTime.parse(binding.editTextStartTime.text)
+            mStartDate = LocalDate.now()
+                .withYear(year)
+                .withMonth(month + 1)
+                .withDayOfMonth(day)
+        }
+        else if (mActiveDateFiled == 2)
+        {
+            mEndTime = LocalTime.parse(binding.editTextEndTime.text)
+            mEndDate = LocalDate.now()
+                .withYear(year)
+                .withMonth(month + 1)
+                .withDayOfMonth(day)
+        }
+        else {
+            assert(false)
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_statistics, container, false)
+    fun ExtractTime() {
+        mStartTime = LocalTime.parse(binding.editTextStartTime.text)
+        mEndTime   = LocalTime.parse(binding.editTextEndTime.text)
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment StatisticsFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            StatisticsFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    override fun onSaveInstanceState(outState: Bundle)
+    {
+        super.onSaveInstanceState(outState)
+        outState?.run {
+            putString("TextView_sp",    binding.textViewSp.text.toString())
+            putString("TextView_dp",    binding.textViewDp.text.toString())
+            putString("TextView_pulse", binding.textViewPulse.text.toString())
+        }
+    }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?)
+    {
+        super.onViewStateRestored(savedInstanceState)
+        if (savedInstanceState?.isEmpty == false)
+        {
+            binding.textViewSp.setText(savedInstanceState!!.getString("TextView_sp"))
+            binding.textViewDp.setText(savedInstanceState!!.getString("TextView_dp"))
+            binding.textViewPulse.setText(savedInstanceState!!.getString("TextView_pulse"))
+        }
     }
 }

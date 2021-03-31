@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/bottom_nav_list"
+        android:id="@+id/listFragment"
         android:icon="@drawable/list"
-        android:title="Notes"/>
+        android:title="@string/notes_menu"/>
     <item
-        android:id="@+id/bottom_nav_chart"
+        android:id="@+id/statisticsFragment"
         android:icon="@drawable/pie_chart"
-        android:title="Statistics" />
-
+        android:title="@string/statistics_ьутг" />
 </menu>

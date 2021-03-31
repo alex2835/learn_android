@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
+    id 'org.jetbrains.kotlin.plugin.serialization' version '1.4.31'
 }
 
 android {
@@ -48,6 +49,12 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     implementation "androidx.recyclerview:recyclerview:1.1.0"
 
+    // Nav
+    implementation "androidx.navigation:navigation-fragment-ktx:2.3.4"
+    implementation "androidx.navigation:navigation-ui-ktx:2.3.4"
+
     implementation 'com.android.support:support-compat:30.0.0'
     implementation 'com.android.support:design:30.0.0'
+
+    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.1.0'
 }
