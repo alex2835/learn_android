@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/navigation"
+    app:startDestination="@id/fragmentListManager">
+
+    <fragment
+        android:id="@+id/fragmentListManager"
+        android:name="com.example.shopping.fragments.FragmentListOfLists"
+        android:label="FragmentListManager" >
+        <action
+            android:id="@+id/action_fragmentListManager_to_fragmentNoteList"
+            app:destination="@id/fragmentNoteList" />
+    </fragment>
+    <fragment
+        android:id="@+id/fragmentNoteList"
+        android:name="com.example.shopping.fragments.FragmentNoteList"
+        android:label="FragmentNoteList" />
+</navigation>

@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Shopping</string>
+    <string name="element_text">TEXT</string>
+
+    <string-array name="entries">
+        <item>Кг</item>
+        <item>гр</item>
+        <item>шт.</item>
+        <item>Option 4</item>
+
+    </string-array>
+</resources>
